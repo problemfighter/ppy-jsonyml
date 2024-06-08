@@ -14,7 +14,7 @@ class YAMLConfigLoader:
     config_obj: YAMLConfigObj = None
     is_print_env: bool = False
 
-    def load(self, env_file: str = None, config_obj: YAMLConfigObj = None, project_root_path: str = PROJECT_ROOT_DIR):
+    def load(self, env_file: str = None, config_obj: YAMLConfigObj = None, project_root_path: str = PROJECT_ROOT_DIR, set_all_attr: bool = False):
         self.env_file = env_file
         self.project_root_path = project_root_path
         self.config_obj = config_obj
@@ -22,7 +22,7 @@ class YAMLConfigLoader:
         if not yaml_dict and config_obj:
             return config_obj
         elif yaml_dict and config_obj and isinstance(config_obj, YAMLConfigObj):
-            return self._map_to_config_object(yaml_dict)
+            return self._map_to_config_object(yaml_dict, set_all_attr=set_all_attr)
         return config_obj
 
     def merge_config(self, existing_config):
@@ -66,8 +66,8 @@ class YAMLConfigLoader:
 
         return self.default_env_file_name
 
-    def _map_to_config_object(self, yaml_dict: dict):
+    def _map_to_config_object(self, yaml_dict: dict, set_all_attr: bool = False):
         for dict_key in yaml_dict:
-            if hasattr(self.config_obj, dict_key):
+            if set_all_attr or hasattr(self.config_obj, dict_key):
                 setattr(self.config_obj, dict_key, yaml_dict[dict_key])
         return self.config_obj
